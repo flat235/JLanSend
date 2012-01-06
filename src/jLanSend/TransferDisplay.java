@@ -3,6 +3,8 @@
  */
 package jLanSend;
 
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
@@ -57,6 +59,7 @@ public class TransferDisplay extends JPanel implements Observer{
 		add(this.fname);
 		add(this.from);
 		add(progress);
+		
 		//add(remove);
 		
 		op.addObserver(this);

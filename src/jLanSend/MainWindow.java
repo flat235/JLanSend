@@ -5,8 +5,12 @@ package jLanSend;
 
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -15,11 +19,13 @@ import java.util.Observer;
 import java.util.Vector;
 
 import javax.print.attribute.standard.NumberUp;
+import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,6 +36,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SpringLayout;
 
 /**
  * @author Moritz Bellach
@@ -51,6 +58,7 @@ public class MainWindow extends JFrame implements Observer {
 	private JComboBox hostchooser;
 	private ComboBoxModel cbm;
 	private SpinnerModel sm;
+	//private TransferDisplay sendOpListLowest, receiveOpListLowest;
 	private File f;
 	private Vector<String> rHosts;
 
@@ -105,10 +113,15 @@ public class MainWindow extends JFrame implements Observer {
 		sendBtnGrp.add(hostchooser);
 		sendBtnGrp.add(sendbtn);
 		
-		sendOpList = new JPanel(new GridLayout(0, 1));
+		//sendOpList = new JPanel(new GridLayout(0, 1));
+		//sendOpList = new JPanel(new SpringLayout());
+		sendOpList = new JPanel(new GridBagLayout());
+		
+		//sendOpListLowest = null;
 		sendTab.add(new JScrollPane(sendOpList), BorderLayout.CENTER);
 		
-		receiveOpList = new JPanel(new GridLayout(0, 1));
+		//receiveOpList = new JPanel(new GridLayout(0, 1));
+		receiveOpList = new JPanel(new GridBagLayout());
 		recvTab.add(new JScrollPane(receiveOpList), BorderLayout.CENTER);
 		
 		//port = new JTextField(String.valueOf(JLanSend.getJLanSend().getPort()));
@@ -258,17 +271,21 @@ public class MainWindow extends JFrame implements Observer {
 		if(src instanceof JLanSend) {
 			if(msg instanceof ReceiveOp) {
 				((ReceiveOp) msg).addObserver(this);
-				receiveOpList.add(new TransferDisplay(((ReceiveOp) msg).getFName(),
+				TransferDisplay td = new TransferDisplay(((ReceiveOp) msg).getFName(),
 						((ReceiveOp) msg).getRNick() + "@" + ((ReceiveOp) msg).getRHostName(),
-						(ReceiveOp) msg)
-				);
+						(ReceiveOp) msg);
+				GridBagConstraints gbc = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1.0, 0.0, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.NONE);
+				receiveOpList.add(td, gbc);
 			}
 			else if(msg instanceof SendOp) {
 				((SendOp) msg).addObserver(this);
-				sendOpList.add(new TransferDisplay(((SendOp) msg).getFName(),
+				TransferDisplay td = new TransferDisplay(((SendOp) msg).getFName(),
 						((SendOp) msg).getRNick() + "@" + ((SendOp) msg).getRHostName(),
-						(SendOp) msg)
-				);
+						(SendOp) msg);
+				GridBagConstraints gbc = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1.0, 0.0, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), GridBagConstraints.NONE, GridBagConstraints.NONE);
+				sendOpList.add(td, gbc);
+				//((SpringLayout) sendOpList.getLayout()).putConstraint(SpringLayout.NORTH, td, 1, (sendOpListLowest == null ? SpringLayout.NORTH : SpringLayout.SOUTH), (sendOpListLowest == null ? sendOpList : sendOpListLowest));
+				//sendOpListLowest = td;
 				sendOpList.revalidate();
 			}
 
