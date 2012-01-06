@@ -52,12 +52,12 @@ public class ReceiveOp extends TransferOp implements Runnable{
 			if(! (in.readLine().equals("JLanSend"))) {
 				closeNet();
 			}
-			System.out.println("got a JLanSend");
+			//System.out.println("got a JLanSend");
 			// check protocoll version
 			int rprotov = Integer.parseInt(in.readLine());
 			if(rprotov == JLanSend.getJLanSend().getLProtoV()) {
 				out.println("ok");
-				System.out.println("sent ok");
+				//System.out.println("sent ok");
 			}
 			else if(rprotov > JLanSend.getJLanSend().getLProtoV()) {
 				out.println(Integer.toString(JLanSend.getJLanSend().getLProtoV()));
@@ -75,7 +75,7 @@ public class ReceiveOp extends TransferOp implements Runnable{
 			if(cmd.equals("detect")) {
 				// autodetection only, just return nickname
 				out.println(JLanSend.getJLanSend().getNick());
-				System.out.println("was a detector, sent my nick name");
+				//System.out.println("detected by " + s.getInetAddress().getHostAddress());
 				closeNet();
 				notifyObservers(ObsMsg.REMOVEME);
 			}

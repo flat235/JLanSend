@@ -142,11 +142,17 @@ public class MainWindow extends JFrame implements Observer {
 			}
 		}
 		else {
+			String toRemove = "";
 			for(String savedHost : rHosts){
 				if(savedHost.endsWith(rHost)){
-					rHosts.remove(savedHost);
+					toRemove = savedHost;
+					break;
 				}
 			}
+			if(!toRemove.equals("")){
+				rHosts.remove(toRemove);
+			}
+			
 		}
 		
 	}

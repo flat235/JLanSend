@@ -42,7 +42,7 @@ public class Receiver implements Runnable {
 		while(!done) {
 			try {
 				s = ss.accept();
-				System.out.println("accepted new connection");
+				//System.out.println("accepted new connection");
 				if(!done) {
 					JLanSend.getJLanSend().addReceiveOp(new ReceiveOp(s));
 				}

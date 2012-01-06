@@ -36,11 +36,11 @@ public class Detector implements Runnable {
 		try {
 			myip = InetAddress.getLocalHost();
 			myipS = myip.getHostAddress();
-			System.out.println("myIP = " + myipS);
+			//System.out.println("myIP = " + myipS);
 			myipA = myipS.split("\\.");
-			for (String part : myipA) {
-				System.out.println(part);
-			}
+			//for (String part : myipA) {
+			//	System.out.println(part);
+			//}
 			
 		} catch (UnknownHostException e) {
 			System.out.println("Could not get my own ip");
@@ -54,12 +54,12 @@ public class Detector implements Runnable {
 		
 		while(true) {
 			for(int i = (threadNo*32)+1; (i < (threadNo*32 + 33)) && (i < 255); i++) {
-				System.out.println("trying ." + Integer.valueOf(i));
+				//System.out.println("trying ." + Integer.valueOf(i));
 				try {
 					s = new Socket();
 					s.connect(new InetSocketAddress(myipA[0] + "." + myipA[1] + "." + myipA[2] + "." + String.valueOf(i), port), 250);
 					//s = new Socket(myipA[0] + "." + myipA[1] + "." + myipA[2] + "." + String.valueOf(i), port);
-					System.out.println("yeah got a socket");
+					
 					in = new BufferedReader(new InputStreamReader(s.getInputStream()));
 					out = new PrintWriter(s.getOutputStream(), true);
 					out.println("JLanSend");
@@ -70,6 +70,7 @@ public class Detector implements Runnable {
 						out.println("detect");
 						String rnick = in.readLine();
 						JLanSend.getJLanSend().addRHost(rnick + "@" + s.getInetAddress().getHostAddress());
+						//System.out.println("detected " + rnick + "@" + s.getInetAddress().getHostAddress());
 						//rHosts.add(s.getInetAddress().getHostAddress());
 					}
 					else {
