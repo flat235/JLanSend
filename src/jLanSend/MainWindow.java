@@ -152,7 +152,7 @@ public class MainWindow extends JFrame implements Observer {
 			if(!toRemove.equals("")){
 				rHosts.remove(toRemove);
 			}
-			
+			hostchooser.revalidate();
 		}
 		
 	}

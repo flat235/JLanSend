@@ -11,7 +11,12 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Observable;
@@ -34,11 +39,16 @@ public class JLanSend extends Observable implements Observer {
 	private Receiver receiver = null;
 	private Vector<ReceiveOp> recvOps;
 	private Vector<SendOp> sendOps;
-	private Vector<String> rHosts;
 	private final int lprotov = 1;
-	private String nick;
-	private int port;
 	private Detector [] detector;
+	
+	//settings:
+	private String downloaddir;
+	private String nick;
+	private boolean startReceiver;
+	private boolean startTray;
+	private boolean startAutodetection;
+	private int port;
 	
 	/**
 	 * 
@@ -52,12 +62,15 @@ public class JLanSend extends Observable implements Observer {
 	 * 
 	 */
 	public JLanSend() {
-		// TODO read config (?)
 		recvOps = new Vector<ReceiveOp>();
 		sendOps = new Vector<SendOp>();
-		rHosts = new Vector<String>();
+		new Vector<String>();
 		port = 9999;
 		nick = "no nick yet";
+		setDownloaddir("");
+		setStartReceiver(true);
+		setStartAutodetection(true);
+		setStartTray(true);
 	}
 
 	/**
@@ -65,10 +78,19 @@ public class JLanSend extends Observable implements Observer {
 	 */
 	public static void main(String[] args) {
 		jls = new JLanSend();
-		jls.initTray();
+		jls.readSettings();
+		if(jls.isStartTray()){
+			jls.initTray();
+		}
 		jls.initMW();
-		jls.initDetector();
-		jls.startReceiver(jls.getPort());
+		if(jls.isStartReceiver()){
+			jls.startReceiver(jls.getPort());
+		}
+		if(jls.isStartAutodetection()){
+			jls.initDetector();
+		}
+		
+		
 	}
 	
 	/**
@@ -197,6 +219,59 @@ public class JLanSend extends Observable implements Observer {
 		}
 		
 	}
+	
+	private void readSettings(){
+		try {
+			BufferedReader in = new BufferedReader(new FileReader("config.ini"));
+			String line;
+			while((line = in.readLine()) != null){
+				if(! (line.startsWith(";") || line.startsWith("#") || line.isEmpty())){
+					String [] lineparts = line.split("\\=");
+					if(lineparts[0].equalsIgnoreCase("port")){
+						port = Integer.parseInt(lineparts[1]);
+					}
+					else if(lineparts[0].equalsIgnoreCase("downloaddir")){
+						setDownloaddir(lineparts[1]);
+					}
+					else if(lineparts[0].equalsIgnoreCase("nick")){
+						nick = lineparts[1];
+					}
+					else if(lineparts[0].equalsIgnoreCase("startReceiver")){
+						if(lineparts[1].equalsIgnoreCase("yes")){
+							setStartReceiver(true);
+						}
+						else{
+							setStartReceiver(false);
+						}
+					}
+					else if(lineparts[0].equalsIgnoreCase("startTray")){
+						if((lineparts[1]).equalsIgnoreCase("yes")){
+							setStartTray(true);
+						}
+						else{
+							setStartTray(false);
+						}
+					}
+					else if(lineparts[0].equalsIgnoreCase("startAutodetection")){
+						if(lineparts[1].equalsIgnoreCase("yes")){
+							setStartAutodetection(true);
+						}
+						else{
+							setStartAutodetection(false);
+						}
+					}
+					else{
+						//wtf? ignore for now...
+					}
+				}
+			}
+		} catch (FileNotFoundException e) {
+			writeSettings();
+		} catch (IOException e) {
+			//ahm... ???
+		}
+		
+	}
 
 	/**
 	 * @param nick the nick to set
@@ -286,5 +361,105 @@ public class JLanSend extends Observable implements Observer {
 			break;
 		}
 		
+	}
+	
+	public void writeSettings(){
+		File f = new File("config.ini");
+		if(f.exists()){
+			f.delete();
+		}
+		try {
+			f.createNewFile();
+			PrintWriter out = new PrintWriter(f);
+			out.println("; empty lines, line starting with ; or # are ignored");
+			out.println("; besides that, you should not put any extra spaces anywhere, since leading, trailing or in-the-middle spaces are read in. example:");
+			out.println(";");
+			out.println("; downloaddir=C:\\Users\\Adam Smith\\Downloads");
+			out.println(";");
+			out.println("; would work out of the box, but");
+			out.println(";");
+			out.println("; downloaddir = C:\\Users\\Adam Smith\\Downloads");
+			out.println(";");
+			out.println("; would not even be recognized as the download directory");
+			out.println();
+			out.println("; nick, well ... probably too many crazy charachters will mess something up");
+			out.println("nick=" + nick);
+			out.println();
+			out.println("; downloaddir may contain spaces");
+			out.println("downloaddir=" + downloaddir);
+			out.println();
+			out.println("; if you change the port then you must do so on all computers you want to exchange files between");
+			out.println("port=" + String.valueOf(port));
+			out.println();
+			out.println("; start receiving files? (recommended)");
+			out.println("startReceiver=" + (startReceiver ? "yes" : "no"));
+			out.println();
+			out.println("; start detecting other JLanSends? (recommended)");
+			out.println("startAutodetection=" + (startAutodetection ? "yes" : "no"));
+			out.println();
+			out.println("; do you want that quiet little tray icon, so do not always have to have yet another window open? Or is your System Tray so crowded you rather not?");
+			out.println("startTray=" + (startTray ? "yes" : "no"));
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	/**
+	 * @param downloaddir the downloaddir to set
+	 */
+	public void setDownloaddir(String downloaddir) {
+		this.downloaddir = downloaddir;
+	}
+
+	/**
+	 * @return the downloaddir
+	 */
+	public String getDownloaddir() {
+		return downloaddir;
+	}
+
+	/**
+	 * @param startReceiver the startReceiver to set
+	 */
+	public void setStartReceiver(boolean startReceiver) {
+		this.startReceiver = startReceiver;
+	}
+
+	/**
+	 * @return the startReceiver
+	 */
+	public boolean isStartReceiver() {
+		return startReceiver;
+	}
+
+	/**
+	 * @param startTray the startTray to set
+	 */
+	public void setStartTray(boolean startTray) {
+		this.startTray = startTray;
+	}
+
+	/**
+	 * @return the startTray
+	 */
+	public boolean isStartTray() {
+		return startTray;
+	}
+
+	/**
+	 * @param startAutodetection the startAutodetection to set
+	 */
+	public void setStartAutodetection(boolean startAutodetection) {
+		this.startAutodetection = startAutodetection;
+	}
+
+	/**
+	 * @return the startAutodetection
+	 */
+	public boolean isStartAutodetection() {
+		return startAutodetection;
 	}
 }
