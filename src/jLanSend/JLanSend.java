@@ -38,7 +38,7 @@ public class JLanSend extends Observable implements Observer {
 	private final int lprotov = 1;
 	private String nick;
 	private int port;
-	private Detector detector;
+	private Detector [] detector;
 	
 	/**
 	 * 
@@ -191,7 +191,11 @@ public class JLanSend extends Observable implements Observer {
 	}
 	
 	private void initDetector() {
-		detector = new Detector();
+		detector = new Detector[8];
+		for(int i = 0; i < 8; i++){
+			detector[i] = new Detector(i);
+		}
+		
 	}
 
 	/**
@@ -239,8 +243,22 @@ public class JLanSend extends Observable implements Observer {
 		}
 	}
 	
-	public void setRHosts(Vector<String> rHosts) {
-		this.rHosts = rHosts;
+	public void addRHost(String rHost) {
+		if(! rHosts.contains(rHost)){
+			rHosts.add(rHost);
+		}
+		notifyObservers(ObsMsg.NEWRHOSTS);
+	}
+	
+	public void delRHost(String rHost) {
+		for(String savedHost : rHosts){
+			if(savedHost.endsWith(rHost)){
+				rHosts.remove(savedHost);
+			}
+		}
+		/*if(rHosts.contains(rHost)){
+			rHosts.remove(rHost);
+		}*/
 		notifyObservers(ObsMsg.NEWRHOSTS);
 	}
 	

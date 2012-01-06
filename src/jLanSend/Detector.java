@@ -11,7 +11,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Vector;
+
 /**
  * @author Moritz Bellach
  *
@@ -26,9 +26,11 @@ public class Detector implements Runnable {
 	private String myipS;
 	private String [] myipA;
 	private int port;
+	private int threadNo;
 	
-	public Detector() {
+	public Detector(int threadNo) {
 		this.port = JLanSend.getJLanSend().getPort();
+		this.threadNo = threadNo;
 		t = new Thread(this);
 		
 		try {
@@ -51,8 +53,7 @@ public class Detector implements Runnable {
 	public void run() {
 		
 		while(true) {
-			Vector<String> rHosts = new Vector<String>();
-			for(int i = 1; i < 255; i++) {
+			for(int i = (threadNo*32)+1; (i < (threadNo*32 + 33)) && (i < 255); i++) {
 				System.out.println("trying ." + Integer.valueOf(i));
 				try {
 					s = new Socket();
@@ -68,7 +69,8 @@ public class Detector implements Runnable {
 						//my proto version
 						out.println("detect");
 						String rnick = in.readLine();
-						rHosts.add(s.getInetAddress().getHostAddress());
+						JLanSend.getJLanSend().addRHost(rnick + "@" + s.getInetAddress().getHostAddress());
+						//rHosts.add(s.getInetAddress().getHostAddress());
 					}
 					else {
 						//switch to compatibility later
@@ -80,10 +82,10 @@ public class Detector implements Runnable {
 				} catch (UnknownHostException e) {
 					System.out.println("." + Integer.valueOf(i) + " is unknownHost");
 				} catch (IOException e) {
-					System.out.println("." + Integer.valueOf(i) + " is IOE");
+					//System.out.println("." + Integer.valueOf(i) + " is IOE");
+					JLanSend.getJLanSend().delRHost(myipA[0] + "." + myipA[1] + "." + myipA[2] + "." + String.valueOf(i));
 				}
 			}
-			JLanSend.getJLanSend().setRHosts(rHosts);
 			
 			try {
 				Thread.sleep(1000*30);
