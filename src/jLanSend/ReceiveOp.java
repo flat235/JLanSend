@@ -95,7 +95,8 @@ public class ReceiveOp extends TransferOp implements Runnable{
 					notifyObservers(ObsMsg.RECVSTART);
 					out.println("goahead");
 					// get data
-					f = new File(JLanSend.getJLanSend().getDownloaddir() + System.getProperty("file.seperator") + fname);
+					//f = new File(JLanSend.getJLanSend().getDownloaddir() + File.pathSeparator + fname);
+					f = new File(JLanSend.getJLanSend().getDownloaddir(), fname);
 					outs = new DataOutputStream(new FileOutputStream(f));
 					byte [] buffer = new byte[1024*1024];
 					
