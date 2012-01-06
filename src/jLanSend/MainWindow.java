@@ -17,6 +17,7 @@ import java.util.Vector;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -24,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 
 /**
  * @author Moritz Bellach
@@ -37,8 +39,10 @@ public class MainWindow extends JFrame implements Observer {
 	
 	private static final long serialVersionUID = 1L;
 	private JTabbedPane tabGroup;
-	private JPanel recvTab, sendTab, sendBtnGrp, sendOpList, receiveOpList;
-	private JButton fchooser, sendbtn;
+	private JPanel recvTab, sendTab, settingsTab, sendBtnGrp, sendOpList, receiveOpList;
+	private JTextField nick, port;
+	private JCheckBox startTray, startAutodetection, startReceiver;
+	private JButton fchooser, sendbtn, downloaddir;
 	private JComboBox hostchooser;
 	private ComboBoxModel cbm;
 	private File f;
@@ -56,6 +60,7 @@ public class MainWindow extends JFrame implements Observer {
 		tabGroup = new JTabbedPane();
 		recvTab = new JPanel(new BorderLayout());
 		sendTab = new JPanel(new BorderLayout());
+		settingsTab = new JPanel(new GridLayout(0, 2));
 		
 		sendBtnGrp = new JPanel();
 		sendTab.add(sendBtnGrp, BorderLayout.NORTH);
@@ -100,8 +105,32 @@ public class MainWindow extends JFrame implements Observer {
 		receiveOpList = new JPanel(new GridLayout(0, 1));
 		recvTab.add(new JScrollPane(receiveOpList), BorderLayout.CENTER);
 		
+		port = new JTextField(String.valueOf(JLanSend.getJLanSend().getPort()));
+		downloaddir = new JButton(JLanSend.getJLanSend().getDownloaddir());
+		nick = new JTextField(JLanSend.getJLanSend().getNick());
+		startReceiver = new JCheckBox();
+		startReceiver.setSelected(JLanSend.getJLanSend().isStartReceiver());
+		startAutodetection = new JCheckBox();
+		startAutodetection.setSelected(JLanSend.getJLanSend().isStartAutodetection());
+		startTray = new JCheckBox();
+		startTray.setSelected(JLanSend.getJLanSend().isStartTray());
+		
+		settingsTab.add(new JLabel("Nick"));
+		settingsTab.add(nick);
+		settingsTab.add(new JLabel("Download Directory"));
+		settingsTab.add(downloaddir);
+		settingsTab.add(new JLabel("Port"));
+		settingsTab.add(port);
+		settingsTab.add(new JLabel("start receiving files on launch"));
+		settingsTab.add(startReceiver);
+		settingsTab.add(new JLabel("create tray icon on launch"));
+		settingsTab.add(startTray);
+		settingsTab.add(new JLabel("start detecting other JLanSends on launch"));
+		settingsTab.add(startAutodetection);
+		
 		tabGroup.addTab("Send", sendTab);
 		tabGroup.addTab("Receive", recvTab);
+		tabGroup.addTab("Settings", settingsTab);
 		add(tabGroup);
 		pack();
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
