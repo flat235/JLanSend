@@ -21,7 +21,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 
 /**
- * @author flatline
+ * @author Moritz Bellach
  *
  */
 public class JLanSend extends Observable implements Observer {
