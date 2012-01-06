@@ -92,7 +92,7 @@ public class MainWindow extends JFrame implements Observer {
 				//TransferDisplay disp = new TransferDisplay(op.getFName(), op.rHostName, op);
 				//sendOpList.add(disp);
 				//sendOpList.revalidate();
-				JLanSend.getJLanSend().addSendOp(new SendOp(f, (String) hostchooser.getSelectedItem(), 9999));
+				JLanSend.getJLanSend().addSendOp(new SendOp(f, (String) hostchooser.getSelectedItem(), JLanSend.getJLanSend().getPort()));
 			}
 		});
 		cbm = new DefaultComboBoxModel();
