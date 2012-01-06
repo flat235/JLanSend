@@ -241,7 +241,13 @@ public class JLanSend extends Observable implements Observer {
 						port = Integer.parseInt(lineparts[1]);
 					}
 					else if(lineparts[0].equalsIgnoreCase("downloaddir")){
-						setDownloaddir(lineparts[1]);
+						if(lineparts.length > 1){
+							setDownloaddir(lineparts[1]);
+						}
+						else{
+							setDownloaddir("");
+						}
+						
 					}
 					else if(lineparts[0].equalsIgnoreCase("nick")){
 						nick = lineparts[1];
