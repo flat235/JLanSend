@@ -14,6 +14,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -38,6 +40,7 @@ public class MainWindow extends JFrame implements Observer {
 	private JPanel recvTab, sendTab, sendBtnGrp, sendOpList, receiveOpList;
 	private JButton fchooser, sendbtn;
 	private JComboBox hostchooser;
+	private ComboBoxModel cbm;
 	private File f;
 	private Vector<String> rHosts;
 
@@ -81,7 +84,9 @@ public class MainWindow extends JFrame implements Observer {
 				JLanSend.getJLanSend().addSendOp(new SendOp(f, (String) hostchooser.getSelectedItem(), 9999));
 			}
 		});
-		hostchooser = new JComboBox();
+		cbm = new DefaultComboBoxModel();
+		rHosts = new Vector<String>();
+		hostchooser = new JComboBox(rHosts);
 		hostchooser.setEditable(true);
 		sendBtnGrp.add(new JLabel("Send"));
 		sendBtnGrp.add(fchooser);
@@ -129,6 +134,23 @@ public class MainWindow extends JFrame implements Observer {
 			pubunhide();
 		}
 	}
+	
+	public synchronized void changeRHost(boolean add, String rHost){
+		if(add){
+			if(!rHosts.contains(rHost)){
+				rHosts.add(rHost);
+			}
+		}
+		else {
+			for(String savedHost : rHosts){
+				if(savedHost.endsWith(rHost)){
+					rHosts.remove(savedHost);
+				}
+			}
+		}
+		
+	}
+	
 
 	@Override
 	public void update(Observable src, Object msg) {
@@ -148,15 +170,7 @@ public class MainWindow extends JFrame implements Observer {
 				);
 				sendOpList.revalidate();
 			}
-			else if(msg instanceof ObsMsg) {
-				if(msg == ObsMsg.NEWRHOSTS) {
-					hostchooser.removeAllItems();
-					rHosts = JLanSend.getJLanSend().getRHosts();
-					for (String rHost : rHosts) {
-						hostchooser.addItem(rHost);
-					}
-				}
-			}
+
 			else {
 				System.out.println("oO");
 			}

@@ -244,27 +244,19 @@ public class JLanSend extends Observable implements Observer {
 	}
 	
 	public void addRHost(String rHost) {
-		if(! rHosts.contains(rHost)){
-			rHosts.add(rHost);
+		if(mw != null){
+			mw.changeRHost(true, rHost);
+			// TODO add cli here later?
 		}
-		notifyObservers(ObsMsg.NEWRHOSTS);
 	}
 	
 	public void delRHost(String rHost) {
-		for(String savedHost : rHosts){
-			if(savedHost.endsWith(rHost)){
-				rHosts.remove(savedHost);
-			}
+		if(mw != null){
+			mw.changeRHost(false, rHost);
+			//TODO add cli here later?
 		}
-		/*if(rHosts.contains(rHost)){
-			rHosts.remove(rHost);
-		}*/
-		notifyObservers(ObsMsg.NEWRHOSTS);
 	}
 	
-	public Vector<String> getRHosts(){
-		return rHosts;
-	}
 	
 	public void notifyObservers(Object o) {
 		setChanged();
