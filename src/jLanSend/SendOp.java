@@ -28,7 +28,16 @@ public class SendOp extends TransferOp implements Runnable{
 	private int port;
 	
 	public SendOp (File f, String host, int port){
-		this.rHostName = host;
+		if(host.contains("@")){
+			String [] thost = new String[2];
+			thost = host.split("@");
+			this.rnick = thost[0];
+			this.rHostName = thost[1];
+		}
+		else{
+			this.rnick = "?";
+			this.rHostName = host;
+		}
 		this.f = f;
 		fname = f.getName();
 		fsize = f.length();
