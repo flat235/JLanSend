@@ -168,14 +168,15 @@ public class MainWindow extends JFrame implements Observer {
 			public void actionPerformed(ActionEvent e) {
 				nick.setText(JLanSend.getJLanSend().getNick());
 				downloaddir.setText(JLanSend.getJLanSend().getDownloaddir());
-				sm.setValue(new NumberUp(JLanSend.getJLanSend().getPort()));
+				sm.setValue(JLanSend.getJLanSend().getPort());
+				
 				startAutodetection.setSelected(JLanSend.getJLanSend().isStartAutodetection());
 				startReceiver.setSelected(JLanSend.getJLanSend().isStartReceiver());
 				startTray.setSelected(JLanSend.getJLanSend().isStartTray());
 				
 			}
 		});
-		defaultsettings = new JButton("factory settings");
+		/*defaultsettings = new JButton("factory settings");
 		defaultsettings.addActionListener(new ActionListener() {
 			
 			@Override
@@ -183,7 +184,7 @@ public class MainWindow extends JFrame implements Observer {
 				// TODO add factory settings reset
 				
 			}
-		});
+		});*/
 		
 		settingsTab.add(new JLabel("Nick"));
 		settingsTab.add(nick);
@@ -199,7 +200,7 @@ public class MainWindow extends JFrame implements Observer {
 		settingsTab.add(startAutodetection);
 		settingsTab.add(restoresettings);
 		settingsTab.add(savesettings);
-		settingsTab.add(defaultsettings);
+		//settingsTab.add(defaultsettings);
 		
 		tabGroup.addTab("Send", sendTab);
 		tabGroup.addTab("Receive", recvTab);

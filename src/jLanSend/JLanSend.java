@@ -163,10 +163,11 @@ public class JLanSend extends Observable implements Observer {
 	private boolean initTray(){
 		if(SystemTray.isSupported()){
 			popup = new PopupMenu("JLanSend");
+			/*
 			MenuItem send = new MenuItem("Send File");
 			sendStat = new MenuItem("Sending: 0");
 			recvStat = new MenuItem("Receiving: 0");
-			
+			*/
 			MenuItem exit = new MenuItem("Exit");
 			exit.addActionListener(new ActionListener() {
 				
@@ -177,7 +178,7 @@ public class JLanSend extends Observable implements Observer {
 					
 				}
 			});
-			
+			/*
 			CheckboxMenuItem recv = new CheckboxMenuItem("Receive Files", true);
 			
 			popup.add(send);
@@ -187,6 +188,17 @@ public class JLanSend extends Observable implements Observer {
 			popup.addSeparator();
 			popup.add(recv);
 			popup.addSeparator();
+			*/
+			MenuItem show = new MenuItem("show/hide JLanSend");
+			show.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					mw.toggleVisibility();
+					
+				}
+			});
+			popup.add(show);
 			popup.add(exit);
 			
 			URL imageURL = JLanSend.class.getResource("icon.png");

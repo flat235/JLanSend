@@ -28,7 +28,7 @@ public class TransferDisplay extends JPanel implements Observer{
 	private static final long serialVersionUID = 1L;
 	JProgressBar progress;
 	JLabel fname, from;
-	//JButton remove;
+	JButton remove;
 	TransferOp op;
 
 	/**
@@ -42,7 +42,7 @@ public class TransferDisplay extends JPanel implements Observer{
 		
 		progress = new JProgressBar(0, 100);
 		progress.setStringPainted(true);
-		/*remove = new JButton("remove");
+		remove = new JButton("remove");
 		remove.setEnabled(false);
 		remove.addActionListener(new ActionListener() {
 			
@@ -55,12 +55,12 @@ public class TransferDisplay extends JPanel implements Observer{
 				par.revalidate();
 			}
 		});
-		*/
+		
 		add(this.fname);
 		add(this.from);
 		add(progress);
 		
-		//add(remove);
+		add(remove);
 		
 		op.addObserver(this);
 	}
@@ -77,13 +77,13 @@ public class TransferDisplay extends JPanel implements Observer{
 			progress.setValue(100);
 			progress.setString("done");
 			op = null;
-			//remove.setEnabled(true);
+			remove.setEnabled(true);
 			break;
 		case FAIL:
 			progress.setString("failed");
 		case REMOVEME:
 			op = null;
-			//remove.setEnabled(true);
+			remove.setEnabled(true);
 			break;
 		default:
 			break;
