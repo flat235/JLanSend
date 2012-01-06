@@ -14,6 +14,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 
+import javax.print.attribute.standard.NumberUp;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -24,8 +25,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 /**
  * @author Moritz Bellach
@@ -40,11 +44,13 @@ public class MainWindow extends JFrame implements Observer {
 	private static final long serialVersionUID = 1L;
 	private JTabbedPane tabGroup;
 	private JPanel recvTab, sendTab, settingsTab, sendBtnGrp, sendOpList, receiveOpList;
-	private JTextField nick, port;
+	private JTextField nick;
+	JSpinner port;
 	private JCheckBox startTray, startAutodetection, startReceiver;
-	private JButton fchooser, sendbtn, downloaddir;
+	private JButton fchooser, sendbtn, downloaddir, savesettings, restoresettings, defaultsettings;
 	private JComboBox hostchooser;
 	private ComboBoxModel cbm;
+	private SpinnerModel sm;
 	private File f;
 	private Vector<String> rHosts;
 
@@ -105,8 +111,22 @@ public class MainWindow extends JFrame implements Observer {
 		receiveOpList = new JPanel(new GridLayout(0, 1));
 		recvTab.add(new JScrollPane(receiveOpList), BorderLayout.CENTER);
 		
-		port = new JTextField(String.valueOf(JLanSend.getJLanSend().getPort()));
+		//port = new JTextField(String.valueOf(JLanSend.getJLanSend().getPort()));
+		sm = new SpinnerNumberModel(JLanSend.getJLanSend().getPort(), 1025, 65535, 1);
+		port = new JSpinner(sm);
 		downloaddir = new JButton(JLanSend.getJLanSend().getDownloaddir());
+		downloaddir.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser jfc = new JFileChooser(JLanSend.getJLanSend().getDownloaddir());
+				jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if(JFileChooser.APPROVE_OPTION == jfc.showOpenDialog(rootPane)){
+					downloaddir.setText(jfc.getSelectedFile().getAbsolutePath());
+				}
+				
+			}
+		});
 		nick = new JTextField(JLanSend.getJLanSend().getNick());
 		startReceiver = new JCheckBox();
 		startReceiver.setSelected(JLanSend.getJLanSend().isStartReceiver());
@@ -114,6 +134,43 @@ public class MainWindow extends JFrame implements Observer {
 		startAutodetection.setSelected(JLanSend.getJLanSend().isStartAutodetection());
 		startTray = new JCheckBox();
 		startTray.setSelected(JLanSend.getJLanSend().isStartTray());
+		savesettings = new JButton("save");
+		savesettings.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JLanSend.getJLanSend().setNick(nick.getText());
+				JLanSend.getJLanSend().setDownloaddir(downloaddir.getText());
+				JLanSend.getJLanSend().setPort(((SpinnerNumberModel) sm).getNumber().intValue());
+				JLanSend.getJLanSend().setStartAutodetection(startAutodetection.isSelected());
+				JLanSend.getJLanSend().setStartReceiver(startReceiver.isSelected());
+				JLanSend.getJLanSend().setStartTray(startTray.isSelected());
+				JLanSend.getJLanSend().writeSettings();
+			}
+		});
+		restoresettings = new JButton("restore");
+		restoresettings.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				nick.setText(JLanSend.getJLanSend().getNick());
+				downloaddir.setText(JLanSend.getJLanSend().getDownloaddir());
+				sm.setValue(new NumberUp(JLanSend.getJLanSend().getPort()));
+				startAutodetection.setSelected(JLanSend.getJLanSend().isStartAutodetection());
+				startReceiver.setSelected(JLanSend.getJLanSend().isStartReceiver());
+				startTray.setSelected(JLanSend.getJLanSend().isStartTray());
+				
+			}
+		});
+		defaultsettings = new JButton("factory settings");
+		defaultsettings.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO add factory settings reset
+				
+			}
+		});
 		
 		settingsTab.add(new JLabel("Nick"));
 		settingsTab.add(nick);
@@ -127,13 +184,22 @@ public class MainWindow extends JFrame implements Observer {
 		settingsTab.add(startTray);
 		settingsTab.add(new JLabel("start detecting other JLanSends on launch"));
 		settingsTab.add(startAutodetection);
+		settingsTab.add(restoresettings);
+		settingsTab.add(savesettings);
+		settingsTab.add(defaultsettings);
 		
 		tabGroup.addTab("Send", sendTab);
 		tabGroup.addTab("Receive", recvTab);
 		tabGroup.addTab("Settings", settingsTab);
 		add(tabGroup);
 		pack();
-		setDefaultCloseOperation(HIDE_ON_CLOSE);
+		if(JLanSend.getJLanSend().isStartTray()){
+			setDefaultCloseOperation(HIDE_ON_CLOSE);
+		}
+		else{
+			setDefaultCloseOperation(EXIT_ON_CLOSE);
+		}
+		
 		setVisible(true);
 		
 	}

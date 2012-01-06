@@ -65,7 +65,7 @@ public class JLanSend extends Observable implements Observer {
 		recvOps = new Vector<ReceiveOp>();
 		sendOps = new Vector<SendOp>();
 		new Vector<String>();
-		port = 9999;
+		port = 55555;
 		nick = "no nick yet";
 		setDownloaddir("");
 		setStartReceiver(true);
@@ -80,7 +80,10 @@ public class JLanSend extends Observable implements Observer {
 		jls = new JLanSend();
 		jls.readSettings();
 		if(jls.isStartTray()){
-			jls.initTray();
+			if(!jls.initTray()){
+				jls.setStartTray(false);
+				jls.writeSettings();
+			}
 		}
 		jls.initMW();
 		if(jls.isStartReceiver()){
@@ -148,12 +151,16 @@ public class JLanSend extends Observable implements Observer {
 	public int getPort() {
 		return port;
 	}
+	
+	public void setPort(int newport){
+		port = newport;
+	}
 
 	/**
 	 * initializes the systray icon
 	 * could be used again later if turning on and off the icon is allowed via settings
 	 */
-	private void initTray(){
+	private boolean initTray(){
 		if(SystemTray.isSupported()){
 			popup = new PopupMenu("JLanSend");
 			MenuItem send = new MenuItem("Send File");
@@ -204,7 +211,10 @@ public class JLanSend extends Observable implements Observer {
 			}
 			
 			
-			
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	
