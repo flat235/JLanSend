@@ -24,7 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 /**
- * @author flatline
+ * @author Moritz Bellach
  *
  */
 public class MainWindow extends JFrame implements Observer {
