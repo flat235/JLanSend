@@ -40,6 +40,8 @@ public class JLanSend extends Observable implements Observer {
 	private Vector<ReceiveOp> recvOps;
 	private Vector<SendOp> sendOps;
 	private final int lprotov = 1;
+	private static final String version = "2.1";
+	private static boolean CLI;
 	private Detector [] detector;
 	
 	//settings:
@@ -77,22 +79,46 @@ public class JLanSend extends Observable implements Observer {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
 		jls = new JLanSend();
 		jls.readSettings();
-		if(jls.isStartTray()){
-			if(!jls.initTray()){
-				jls.setStartTray(false);
-				jls.writeSettings();
+		
+		if(args.length > 0){
+			
+			CLI = true;
+			
+			if(args.length == 2){
+				
+				String file = args[0];
+				String host = args[1];
+				
+				jls.addSendOp(new SendOp(new File(file), host, JLanSend.getJLanSend().getPort()));
+			}
+			else{
+				System.out.println("usage: java JLanSend-" + version);
+				System.out.println("or for command line sending:");
+				System.out.println("java JLandSend-" + version + " <file> <ip or hostname>");
+				return;
 			}
 		}
-		jls.initMW();
-		if(jls.isStartReceiver()){
-			jls.startReceiver(jls.getPort());
+		else{
+			
+			CLI = false;
+			
+			if(jls.isStartTray()){
+				if(!jls.initTray()){
+					jls.setStartTray(false);
+					jls.writeSettings();
+				}
+			}
+			jls.initMW();
+			if(jls.isStartReceiver()){
+				jls.startReceiver(jls.getPort());
+			}
+			if(jls.isStartAutodetection()){
+				jls.initDetector();
+			}
 		}
-		if(jls.isStartAutodetection()){
-			jls.initDetector();
-		}
-		
 		
 	}
 	
@@ -384,6 +410,22 @@ public class JLanSend extends Observable implements Observer {
 				System.out.println("oO");
 			}
 			break;
+		case SENDPROGRESS:
+			if(CLI){
+				System.out.println("Progress: " + ((TransferOp) src).getProgress());
+			}
+			break;
+		case SENDDONE:
+			if(CLI){
+				System.out.println("done");
+				System.exit(0);
+			}
+			break;
+		case FAIL:
+			if(CLI){
+				System.out.println("failed");
+				System.exit(0);
+			}
 
 		default:
 			break;
