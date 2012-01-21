@@ -95,9 +95,9 @@ public class JLanSend extends Observable implements Observer {
 				jls.addSendOp(new SendOp(new File(file), host, JLanSend.getJLanSend().getPort()));
 			}
 			else{
-				System.out.println("usage: java JLanSend-" + version);
+				System.out.println("usage: java -jar JLanSend-" + version + ".jar");
 				System.out.println("or for command line sending:");
-				System.out.println("java JLandSend-" + version + " <file> <ip or hostname>");
+				System.out.println("java -jar JLandSend-" + version + ".jar <file> <ip or hostname>");
 				return;
 			}
 		}
