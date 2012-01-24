@@ -10,6 +10,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -97,6 +98,16 @@ public class ReceiveOp extends TransferOp implements Runnable{
 					// get data
 					//f = new File(JLanSend.getJLanSend().getDownloaddir() + File.pathSeparator + fname);
 					f = new File(JLanSend.getJLanSend().getDownloaddir(), fname);
+
+					if(!f.createNewFile()){
+						int i = 1;
+						do{
+							f = new File(JLanSend.getJLanSend().getDownloaddir(),  "(" + String.valueOf(i) + ")" + fname);
+							i++;
+						}while(!f.createNewFile());
+					}
+
+					
 					outs = new DataOutputStream(new FileOutputStream(f));
 					byte [] buffer = new byte[1024*1024];
 					
